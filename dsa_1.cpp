@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 #include <list>
-#include <stdio.h>
-#include <sstream> 
 
 using namespace std;
 
@@ -78,15 +76,15 @@ class Stack: public SimpleList<T> {
 public:
 	Stack(){}
     Stack(string setName){
-    	head = NULL;
-      	tail = NULL;
-    	listName = setName;
+    	SimpleList<T>::head = NULL;
+      	SimpleList<T>::tail = NULL;
+    	SimpleList<T>::listName = setName;
     }
 	T pop() {
-		return SimpleList::removeStart();
+		return SimpleList<T>::removeStart();
 	}
 	void push(T value) {
-		SimpleList::insertStart(value);
+		SimpleList<T>::insertStart(value);
 	}
 };
 
@@ -95,15 +93,15 @@ class Queue: public SimpleList<T> {
 public:
 	Queue(){}
     Queue(string setName){
-    	head = NULL;
-      	tail = NULL;
-    	listName = setName;
+    	SimpleList<T>::head = NULL;
+      	SimpleList<T>::tail = NULL;
+    	SimpleList<T>::listName = setName;
     }
 	T pop() {
-		return SimpleList::removeStart();
+		return SimpleList<T>::removeStart();
 	}
 	void push(T value) {
-		SimpleList::insertEnd(value);
+		SimpleList<T>::insertEnd(value);
 	}
 };
 
@@ -115,16 +113,11 @@ bool exists(string name, vector<string> nameList) {
 	return false;
 }
 
-void fileOutput(string name, string input, ){
-	ofstream File;
-	File.open(name.c_str(), std::ios::app);
-	File << input;
-}
-
 void command(vector<string> inputs, string outName) {
-	string name, obj, type, value, popped, outString;
+	string name, obj, type, value;
+	ofstream File;
+	File.open(outName.c_str(), std::ios::app);
 	vector<string> nameList;
-	char buffer [50];
 	list<SimpleList<int> *> listSLi;
 	list<SimpleList<double> *> listSLd;
 	list<SimpleList<string> *> listSLs;
@@ -135,12 +128,11 @@ void command(vector<string> inputs, string outName) {
 	for(int i = 0; i <  inputs.size(); i++) {
 		name = inputs[++i];
 		obj = name.at(0);
-		
 		if (inputs[i-1] == "create") {
 			type = inputs[++i];
-			outString = "PROCESSING COMMAND: create " + name + " " + type + "\n";
+			File << "PROCESSING COMMAND: create " << name << " " << type << endl;
 			if(exists(name, nameList)) { 
-				outString += "ERROR: This name already exists!\n";
+				File << "ERROR: This name already exists!" << endl;
 		
 			} else {
 				nameList.push_back(name);
@@ -170,11 +162,10 @@ void command(vector<string> inputs, string outName) {
 
 		} else if (inputs[i-1] == "push") {
 			value = inputs[++i];
-			outString = "PROCESSING COMMAND: push " + name + " " + value + "\n";
+			File << "PROCESSING COMMAND: push " << name << " " << value << endl;
 			if(exists(name, nameList)) { 
 				if (obj == "i"){
 					for (list<SimpleList<int> *>::iterator it = listSLi.begin(); it != listSLi.end(); it++){
-						
 						if ((*it)->getName() == name) {
 							(*it)->push(atoi(value.c_str()));
 						}
@@ -183,7 +174,6 @@ void command(vector<string> inputs, string outName) {
 					
 				} else if (obj == "d") {
 					for (list<SimpleList<double> *>::iterator it = listSLd.begin(); it != listSLd.end(); it++){
-						
 						if ((*it)->getName() == name) {
 							(*it)->push(atof(value.c_str()));
 						}
@@ -196,23 +186,20 @@ void command(vector<string> inputs, string outName) {
 					}
 				}
 			} else {
-				outString += "ERROR: This name does not exist!\n";
+				File << "ERROR: This name does not exist!" << endl;
 			}
 
 		} else if (inputs[i-1] == "pop") {
-			outString = "PROCESSING COMMAND: pop " + name + "\n";
+			File << "PROCESSING COMMAND: pop " << name << endl;
 			if(exists(name, nameList)) {
 				if (obj == "i"){
 					for (list<SimpleList<int> *>::iterator it = listSLi.begin(); it != listSLi.end(); it++){
 						if ((*it)->getName() == name) {
 							if ((*it)->isEmpty()) {
-								outString += "ERROR: This list is empty!\n";
+								File << "ERROR: This list is empty!" << endl;
 							} else {
-								//cout << (*it)->pop();
-								//popped = sprintf (buffer, "%d", (*it)->pop());
-								//cout << popped;
-								cout << (*it)->pop();
-								//outString += "Value popped: " + popped + "\n";
+								//cout << to_string((*it)->pop());
+								File << "Value popped: " << (*it)->pop() << endl;
 							}
 
 						}
@@ -221,13 +208,10 @@ void command(vector<string> inputs, string outName) {
 					for (list<SimpleList<double> *>::iterator it = listSLd.begin(); it != listSLd.end(); it++){
 						if ((*it)->getName() == name) {
 							if ((*it)->isEmpty()) {
-								outString += "ERROR: This list is empty!\n";
+								File << "ERROR: This list is empty!" << endl;
 							} else {
-								//cout << (*it)->pop();
-								//popped = sprintf (buffer, "%d", (*it)->pop());
-								cout << (*it)->pop();
 								//popped = to_string((*it)->pop());
-								//outString += "Value popped: " + popped + "\n";
+								File << "Value popped: " << (*it)->pop() << endl;
 							}
 						}
 					}
@@ -235,22 +219,18 @@ void command(vector<string> inputs, string outName) {
 					for (list<SimpleList<string> *>::iterator it = listSLs.begin(); it != listSLs.end(); it++){
 						if ((*it)->getName() == name) {
 							if ((*it)->isEmpty()) {
-								outString += "ERROR: This list is empty!\n ";
+								File << "ERROR: This list is empty!" << endl;
 							} else {
-								popped = (*it)->pop();
-								cout << popped;
-								//outString += "Value popped: " + popped + "\n";
+								//popped = (*it)->pop();
+								File << "Value popped: " << (*it)->pop() << endl;
 							}
 						}
 					}
 				}
 			} else {
-				outString += "ERROR: This name does not exist!\n";
+				File << "ERROR: This name does not exist!" << endl;
 			}
-
 		}
-		 
-		//fileOutput(outName.c_str(), outString.c_str());
 	}
 }
 
@@ -271,24 +251,11 @@ void fileInput(string inName, string outName){
 int main() {
 	string fileNameIn, fileNameOut;
 
-
-	//cout << "Enter name of the input file: ";
-	//cin >> fileNameIn;
-	fileNameIn = "1.txt";
-	//cout << "Enter name of the output file: ";
-	//cin >> fileNameOut;
-	fileNameOut = "w.txt";
+	cout << "Enter name of the input file: ";
+	cin >> fileNameIn;
+	cout << "Enter name of the output file: ";
+	cin >> fileNameOut;
 	fileInput(fileNameIn, fileNameOut); 
-
-	/* SimpleList<int> *pSLi = new Queue<int>("i");
-	pSLi->push(6);
-	pSLi->push(5);
-	pSLi->push(4);
-	cout << pSLi->pop();
-	cout << pSLi->pop();
-	cout << pSLi->pop();
-	cout << pSLi->getName(); */
-	
 
 	return 0;
 } 
